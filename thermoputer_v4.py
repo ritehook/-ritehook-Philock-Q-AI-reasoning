@@ -7,8 +7,13 @@ def verify_signature(data):
     return 'signature' in data
 
 def lineage_stamp(query, result):
+    # Obfuscated constant (proxies coupler range, not exact)
+    SECURITY_MOD = 0.006  # Generic placeholder, not g0=0.00680
     payload = f"{query}:{result}:{time.time()}"
-    return hashlib.sha256(payload.encode()).hexdigest()
+    # Dynamic salt based on a hashed modifier
+    salt = hashlib.sha256(f"{SECURITY_MOD}:{os.urandom(4).hex()}".encode()).hexdigest()[:8]
+    stamped_payload = f"{payload}:{salt}"
+    return hashlib.sha256(stamped_payload.encode()).hexdigest()
 
 class Reasoner:
     def init(self):
